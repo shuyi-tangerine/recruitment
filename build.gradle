@@ -1,0 +1,52 @@
+buildscript {
+    ext {
+        springBootVersion = '3.2.6'
+        lombokVersion = '1.18.30'
+    }
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath "org.springframework.boot:spring-boot-gradle-plugin:$springBootVersion"
+    }
+}
+
+allprojects {
+    group = 'com.shuyi.com'
+    version = '0.0.1-SNAPSHOT'
+
+    tasks.withType(JavaCompile).configureEach {
+        sourceCompatibility = 23
+        targetCompatibility = 23
+    }
+
+    repositories {
+        mavenCentral()
+    }
+}
+
+subprojects {
+    apply plugin: 'idea'
+    apply plugin: 'java'
+    apply plugin: 'io.spring.dependency-management'
+
+    dependencyManagement {
+        imports {
+            mavenBom "org.springframework.boot:spring-boot-dependencies:$springBootVersion"
+        }
+        dependencies {
+            dependency 'org.projectlombok:lombok:1.18.30'
+        }
+    }
+}
+
+project(":recruitment-tencent") {
+    apply plugin: 'org.springframework.boot'
+
+    dependencies {
+        implementation 'org.springframework.boot:spring-boot-starter'
+        implementation 'org.projectlombok:lombok'
+        testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    }
+}
+
