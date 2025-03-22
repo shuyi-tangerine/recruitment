@@ -1,2 +1,4 @@
 rootProject.name = 'recruitment'
+include ':recruitment-api'
+include ':recruitment-common'
 include ':recruitment-tencent'

@@ -1,13 +1,13 @@
-package com.shuyi.com.recruitment;
+package com.shuyi.recruitment.api;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class RecruitmentApplication {
+public class RecruitmentApiApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(RecruitmentApplication.class, args);
+        SpringApplication.run(RecruitmentApiApplication.class, args);
     }
 
 }

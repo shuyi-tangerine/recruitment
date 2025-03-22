@@ -1,10 +1,10 @@
-package com.shuyi.com.recruitment;
+package com.shuyi.recruitment.api;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class RecruitmentApplicationTests {
+class RecruitmentTencentApplicationTests {
 
     @Test
     void contextLoads() {

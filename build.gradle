@@ -12,7 +12,7 @@ buildscript {
 }
 
 allprojects {
-    group = 'com.shuyi.com'
+    group = 'com.shuyi'
     version = '0.0.1-SNAPSHOT'
 
     tasks.withType(JavaCompile).configureEach {
@@ -30,20 +30,37 @@ subprojects {
     apply plugin: 'java'
     apply plugin: 'io.spring.dependency-management'
 
+    test {
+        useJUnitPlatform()
+    }
+
     dependencyManagement {
         imports {
             mavenBom "org.springframework.boot:spring-boot-dependencies:$springBootVersion"
         }
         dependencies {
-            dependency 'org.projectlombok:lombok:1.18.30'
+            dependency "org.projectlombok:lombok:$lombokVersion"
         }
     }
 }
 
-project(":recruitment-tencent") {
-    apply plugin: 'org.springframework.boot'
-
+project(":recruitment-api") {
     dependencies {
+        implementation 'org.springframework.boot:spring-boot-starter'
+        implementation 'org.projectlombok:lombok'
+        testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    }
+}
+
+project(":recruitment-common") {
+    dependencies {
+        implementation 'org.projectlombok:lombok'
+    }
+}
+
+project(":recruitment-tencent") {
+    dependencies {
+        implementation project(":recruitment-common")
         implementation 'org.springframework.boot:spring-boot-starter'
         implementation 'org.projectlombok:lombok'
         testImplementation 'org.springframework.boot:spring-boot-starter-test'
