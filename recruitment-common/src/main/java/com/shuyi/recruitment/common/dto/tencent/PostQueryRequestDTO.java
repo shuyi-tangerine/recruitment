@@ -7,13 +7,13 @@ import java.util.List;
 @Data
 public class PostQueryRequestDTO {
     private Long timestamp;
-    private String countryId;
+    private List<Integer> countryId;
     private List<Integer> cityId;
     private List<Integer> bgIds;
-    private Integer productId;
-    private Integer categoryId;
-    private Integer parentCategoryId;
-    private Integer attrId;
+    private List<Integer> productId;
+    private List<Integer> categoryId;
+    private List<Integer> parentCategoryId;
+    private List<Integer> attrId;
     private String keyword;
     private Integer pageIndex;
     private Integer pageSize;

@@ -4,15 +4,27 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.shuyi.recruitment.common.dto.tencent.ResponseDTO;
 
 import java.lang.reflect.Field;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
 
 public class TencentUtil {
+    public static final int DEFAULT_PAGE_SIZE = 10;
 
-    public static final String POST_QUERY_BASE_URL = "https://careers.tencent.com/tencentcareer/api/post/Query";
-    public static final String POST_BY_POST_ID_BASE_URL = "https://careers.tencent.com/tencentcareer/api/post/ByPostId";
+    private static final String POST_QUERY_BASE_URL = "https://careers.tencent.com/tencentcareer/api/post/Query";
+    private static final String POST_BY_POST_ID_BASE_URL = "https://careers.tencent.com/tencentcareer/api/post/ByPostId";
+
+    private static final int SUCCESS_CODE = 200;
+
+
+    private static final String DATE_TIME_PATTERN = "yyyy年MM月dd日";
 
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
@@ -68,4 +80,34 @@ public class TencentUtil {
     public static <T> String buildPostByPostIdUrl(T requestDTO) {
         return buildUrl(POST_BY_POST_ID_BASE_URL, requestDTO);
     }
+
+    public static <T> boolean isSuccessCode(ResponseDTO<T> responseDTO) {
+        return Objects.nonNull(responseDTO) && Objects.equals(SUCCESS_CODE, responseDTO.getCode());
+    }
+
+    public static Long parseUnixSeconds(String raw) {
+        try {
+            return ZonedDateTime.of(
+                    LocalDateTime.parse(raw, DateTimeFormatter.ofPattern(DATE_TIME_PATTERN, Locale.getDefault())),
+                    ZoneId.systemDefault()
+            ).toEpochSecond();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public static <T> void checkResponse(ResponseDTO<T> responseDTO) {
+        if (TencentUtil.isSuccessCode(responseDTO)) {
+            return;
+        }
+
+        Integer code = null;
+        if (Objects.nonNull(responseDTO)) {
+            code = responseDTO.getCode();
+        }
+
+        throw new RuntimeException("query fail, code:" + code);
+    }
+
 }

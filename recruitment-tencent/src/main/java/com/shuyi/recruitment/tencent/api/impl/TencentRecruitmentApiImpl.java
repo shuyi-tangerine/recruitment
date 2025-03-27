@@ -6,6 +6,7 @@ import com.shuyi.recruitment.common.dto.tencent.PostDTO;
 import com.shuyi.recruitment.common.dto.tencent.PostQueryRequestDTO;
 import com.shuyi.recruitment.common.dto.tencent.PostQueryResponseDataDTO;
 import com.shuyi.recruitment.common.dto.tencent.ResponseDTO;
+import com.shuyi.recruitment.common.enums.tencent.LanguageEnum;
 import com.shuyi.recruitment.common.util.TencentUtil;
 import com.shuyi.recruitment.tencent.api.TencentRecruitmentApi;
 import org.jsoup.Jsoup;
@@ -13,7 +14,9 @@ import org.jsoup.nodes.Document;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 @Component
 public class TencentRecruitmentApiImpl implements TencentRecruitmentApi {
@@ -42,6 +45,14 @@ public class TencentRecruitmentApiImpl implements TencentRecruitmentApi {
         return this.postQuery(targetUrl);
     }
 
+
+    @Override
+    public PostQueryResponseDataDTO queryPostListPage(PostQueryRequestDTO requestDTO) {
+        ResponseDTO<PostQueryResponseDataDTO> responseDTO = this.postQuery(requestDTO);
+        TencentUtil.checkResponse(responseDTO);
+        return responseDTO.getData();
+    }
+
     @Override
     public ResponseDTO<PostDTO> postByPostId(String url) {
         int retryTimes = 2;
@@ -65,6 +76,19 @@ public class TencentRecruitmentApiImpl implements TencentRecruitmentApi {
     public ResponseDTO<PostDTO> postByPostId(PostByPostIdRequestDTO requestDTO) {
         String targetUrl = TencentUtil.buildPostByPostIdUrl(requestDTO);
         return this.postByPostId(targetUrl);
+    }
+
+    @Override
+    public PostDTO queryPostByPostId(String postId) {
+        PostByPostIdRequestDTO requestDTO = new PostByPostIdRequestDTO();
+        requestDTO.setPostId(postId);
+        requestDTO.setTimestamp(System.currentTimeMillis());
+        requestDTO.setLanguage(LanguageEnum.ZH_CN.getName());
+
+        ResponseDTO<PostDTO> responseDTO = this.postByPostId(requestDTO);
+        TencentUtil.checkResponse(responseDTO);
+
+        return responseDTO.getData();
     }
 
     private Map<String, String> getHeaders() {

@@ -5,6 +5,11 @@ import com.shuyi.recruitment.common.dto.tencent.PostDTO;
 import com.shuyi.recruitment.common.dto.tencent.PostQueryRequestDTO;
 import com.shuyi.recruitment.common.dto.tencent.PostQueryResponseDataDTO;
 import com.shuyi.recruitment.common.dto.tencent.ResponseDTO;
+import com.shuyi.recruitment.common.enums.tencent.AreaEnum;
+import com.shuyi.recruitment.common.enums.tencent.AttrEnum;
+import com.shuyi.recruitment.common.enums.tencent.CategoryEnum;
+import com.shuyi.recruitment.common.enums.tencent.CityEnum;
+import com.shuyi.recruitment.common.enums.tencent.LanguageEnum;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -21,13 +26,13 @@ public class TencentRecruitmentApiTests {
     public void postQuery() {
         PostQueryRequestDTO requestDTO = new PostQueryRequestDTO();
         requestDTO.setTimestamp(System.currentTimeMillis());
-        requestDTO.setCategoryId(40001001);
-        requestDTO.setAttrId(1);
-        requestDTO.setCityId(List.of(1, 5));
+        requestDTO.setCategoryId(List.of(CategoryEnum.FINANCE.getCode()));
+        requestDTO.setAttrId(List.of(AttrEnum.SOCIAL.getCode()));
+        requestDTO.setCityId(List.of(CityEnum.SHENZHEN.getCode(), CityEnum.GUANGZHOU.getCode()));
         requestDTO.setPageIndex(1);
         requestDTO.setPageSize(10);
-        requestDTO.setLanguage("zh-cn");
-        requestDTO.setArea("cn");
+        requestDTO.setLanguage(LanguageEnum.ZH_CN.getName());
+        requestDTO.setArea(AreaEnum.CN.getName());
         ResponseDTO<PostQueryResponseDataDTO> responseDTO = tencentRecruitmentApi.postQuery(requestDTO);
         System.out.println(responseDTO);
     }
