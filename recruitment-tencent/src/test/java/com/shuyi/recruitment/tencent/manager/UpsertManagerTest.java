@@ -1,5 +1,6 @@
 package com.shuyi.recruitment.tencent.manager;
 
+import com.shuyi.recruitment.common.enums.QueryExecMode;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -24,7 +25,7 @@ public class UpsertManagerTest {
 
     @Test
     public void upsertAmountPost() {
-        int amount = 5000;
-        upsertManager.upsertAmountPost(amount);
+        int amount = 1000;
+        upsertManager.upsertAmountPost(amount, QueryExecMode.AFTER_LONG_WAIT_UPDATE);
     }
 }

@@ -25,4 +25,22 @@
 # 常用 SQL
 
 ```sql
+select *
+from tencent_job
+where is_deleted=0
+  and location_name='深圳'
+  and category_name='技术'
+-- and responsibility like '%Go%'
+order by last_update_time desc
+    limit 50;
+
+
+select *
+from tencent_job
+where is_deleted=0
+  and location_name='深圳'
+  and category_name='财务'
+-- and responsibility like ''
+order by last_update_time desc
+    limit 50;
 ```

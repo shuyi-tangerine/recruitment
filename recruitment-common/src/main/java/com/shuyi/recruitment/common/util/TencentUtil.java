@@ -10,15 +10,14 @@ import com.shuyi.recruitment.common.entity.TencentJobDO;
 
 import java.lang.reflect.Field;
 import java.sql.Timestamp;
-import java.text.SimpleDateFormat;
+import java.time.Instant;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
+import java.util.TimeZone;
 
 public class TencentUtil {
     public static final int DEFAULT_PAGE_SIZE = 10;
@@ -152,4 +151,19 @@ public class TencentUtil {
         return tencentJobDO;
     }
 
+    /**
+     * 主要是针对 SQLite 时间戳存储做的一些工作
+     * @param confusedLocalZoneAndUtcTimestamp 把北京当前UTC时区的错误 ts，如北京2025-04-05 00:00:00。正确的应该是UTC2025-04-05 00:00:00或者北京2025-04-05 08:00:00
+     * @return 返回正确的时间
+     */
+    public static Timestamp rebuildLocalZoneTimestamp(Timestamp confusedLocalZoneAndUtcTimestamp) {
+        if (Objects.isNull(confusedLocalZoneAndUtcTimestamp)) {
+            return null;
+        }
+
+        // 先算出和 UTC 的偏移量，然后给错误地时间加上即可
+        int offsetMS = TimeZone.getDefault().getOffset(System.currentTimeMillis());
+        Instant instant = confusedLocalZoneAndUtcTimestamp.toInstant().plusMillis(offsetMS);
+        return Timestamp.from(instant);
+    }
 }

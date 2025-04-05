@@ -4,9 +4,8 @@ import com.shuyi.recruitment.common.dto.tencent.PostDTO;
 import com.shuyi.recruitment.common.dto.tencent.PostQueryRequestDTO;
 import com.shuyi.recruitment.common.dto.tencent.PostQueryResponseDataDTO;
 import com.shuyi.recruitment.common.entity.TencentJobDO;
+import com.shuyi.recruitment.common.enums.QueryExecMode;
 import com.shuyi.recruitment.common.enums.tencent.AreaEnum;
-import com.shuyi.recruitment.common.enums.tencent.AttrEnum;
-import com.shuyi.recruitment.common.enums.tencent.CategoryEnum;
 import com.shuyi.recruitment.common.enums.tencent.CityEnum;
 import com.shuyi.recruitment.common.enums.tencent.LanguageEnum;
 import com.shuyi.recruitment.common.util.TencentUtil;
@@ -29,6 +28,8 @@ public class UpsertManagerImpl implements UpsertManager {
     // 防止爬得过快
     private static final int SLEEP_START_MILLIS = 200;
     private static final int SLEEP_END_MILLIS = 5000;
+
+    private static final int UPDATE_INTERVAL_SEC = 3 * 60 * 60;
 
     @Autowired
     private TencentRecruitmentApi tencentRecruitmentApi;
@@ -85,7 +86,7 @@ public class UpsertManagerImpl implements UpsertManager {
     }
 
     @Override
-    public void upsertAmountPost(int amount) {
+    public void upsertAmountPost(int amount, QueryExecMode queryExecMode) {
         // 先获取页数数据，拿到所有需要的 postId
         Set<String> postIds =  new HashSet<>();
 
@@ -99,6 +100,7 @@ public class UpsertManagerImpl implements UpsertManager {
             ++pageIndex;
 
             PostQueryResponseDataDTO postQueryResponseDataDTO = tencentRecruitmentApi.queryPostListPage(requestDTO);
+            ThreadUtil.sleepRandomMillis(SLEEP_START_MILLIS, SLEEP_END_MILLIS, "");
 
             // 没有数据了，跳出
             if (Objects.isNull(postQueryResponseDataDTO) || Objects.isNull(postQueryResponseDataDTO.getPosts()) || postQueryResponseDataDTO.getPosts().isEmpty()) {
@@ -114,14 +116,36 @@ public class UpsertManagerImpl implements UpsertManager {
                     break;
                 }
 
-                this.upsertByPostId(post.getPostId());
+                TencentJobDO tencentJobDO = this.tencentJobDAO.selectByPostId(post.getPostId());
+
+                boolean isExists = false;
+                Long intervalSec = null;
+                if (Objects.nonNull(tencentJobDO)) {
+                    isExists = true;
+                    intervalSec = System.currentTimeMillis() / 1000 - tencentJobDO.getUpdatedAt().toInstant().getEpochSecond();
+                }
+
+                if (Objects.isNull(queryExecMode)
+                        || Objects.equals(queryExecMode, QueryExecMode.NOT_EXIST_INSERT) && !isExists
+                        || Objects.equals(queryExecMode, QueryExecMode.AFTER_LONG_WAIT_UPDATE)
+                            && isExists && intervalSec > UPDATE_INTERVAL_SEC
+                        || Objects.equals(queryExecMode, QueryExecMode.ALL_UPSERT)
+                ) {
+                    this.upsertByPostId(post.getPostId());
+                } else {
+                    // 数据库已经存在，则不需要再次获取
+                    if (!isExists) {
+                        System.out.println("[upsertAmountPost] already exist, ignore post id: " + post.getPostId());
+                    } else {
+                        // 模式原因，跳过执行
+                        System.out.printf("[upsertAmountPost] mode[%s] ignore update, ignore post id: %s\n", queryExecMode, post.getPostId());
+                    }
+                }
             }
 
             if (postIds.size() >= amount || pageIndex >= MAX_PAGE) {
                 break;
             }
-
-            ThreadUtil.sleepRandomMillis(SLEEP_START_MILLIS, SLEEP_END_MILLIS, "");
         }
 
         // 获取数据详情、插入到数据库中
@@ -131,16 +155,15 @@ public class UpsertManagerImpl implements UpsertManager {
     @Override
     public void upsertByPostId(String postId) {
         PostDTO postDTO = this.tencentRecruitmentApi.queryPostByPostId(postId);
+        ThreadUtil.sleepRandomMillis(SLEEP_START_MILLIS, SLEEP_END_MILLIS, "");
         if (Objects.isNull(postDTO)) {
             return;
         }
 
         TencentJobDO tencentJobDO = this.tencentJobDAO.upsert(TencentUtil.postDtoToTencentJobDO(postDTO));
-        System.out.printf("insert postId:%s lastUpdateTime:%s postName:%s postURL:%s id:%d createdAt:%s updatedAt:%s\n",
+        System.out.printf("upsert postId:%s lastUpdateTime:%s postName:%s postURL:%s id:%d createdAt:%s updatedAt:%s\n",
                 postDTO.getPostId(), postDTO.getLastUpdateTime(), postDTO.getRecruitPostName(), postDTO.getPostURL(),
                 tencentJobDO.getId(), tencentJobDO.getCreatedAt(), tencentJobDO.getUpdatedAt());
-
-        ThreadUtil.sleepRandomMillis(SLEEP_START_MILLIS, SLEEP_END_MILLIS, "");
     }
 
     @Override

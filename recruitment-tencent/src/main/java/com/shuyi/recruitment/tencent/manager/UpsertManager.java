@@ -1,5 +1,7 @@
 package com.shuyi.recruitment.tencent.manager;
 
+import com.shuyi.recruitment.common.enums.QueryExecMode;
+
 public interface UpsertManager {
 
     /*
@@ -10,7 +12,7 @@ public interface UpsertManager {
     /*
      * upsert 指定条数
      */
-    void upsertAmountPost(int amount);
+    void upsertAmountPost(int amount, QueryExecMode queryExecMode);
 
     /*
      * upsert 单条数据

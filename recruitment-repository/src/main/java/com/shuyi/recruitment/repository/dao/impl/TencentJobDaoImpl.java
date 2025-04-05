@@ -2,6 +2,7 @@ package com.shuyi.recruitment.repository.dao.impl;
 
 import com.shuyi.recruitment.common.entity.TencentJobDO;
 import com.shuyi.recruitment.common.enums.IsDeletedEnum;
+import com.shuyi.recruitment.common.util.TencentUtil;
 import com.shuyi.recruitment.repository.mapper.TencentJobMapper;
 import com.shuyi.recruitment.repository.dao.TencentJobDAO;
 import org.springframework.stereotype.Service;
@@ -36,25 +37,29 @@ public class TencentJobDaoImpl implements TencentJobDAO {
 
     @Override
     public TencentJobDO selectOne(TencentJobDO req) {
-        return this.tencentJobMapper.selectOne(TencentJobDO.builder().
+        TencentJobDO tencentJobDO = this.tencentJobMapper.selectOne(TencentJobDO.builder().
                 id(req.getId()).
                 postID(req.getPostID()).
                 isDeleted(IsDeletedEnum.NOT_DELETED.getCode()).
                 build());
+        this.rebuildCreatedAtUpdatedAt(tencentJobDO);
+        return tencentJobDO;
     }
 
     @Override
     public TencentJobDO selectOneNeedDeleted(TencentJobDO req) {
-        return this.tencentJobMapper.selectOne(TencentJobDO.builder().
+        TencentJobDO tencentJobDO = this.tencentJobMapper.selectOne(TencentJobDO.builder().
                 id(req.getId()).
                 postID(req.getPostID()).
                 isDeleted(null).
                 build());
+        this.rebuildCreatedAtUpdatedAt(tencentJobDO);
+        return tencentJobDO;
     }
 
     @Override
     public TencentJobDO selectByPostId(String postId) {
-        return this.tencentJobMapper.selectOne(TencentJobDO.builder().
+        return this.selectOne(TencentJobDO.builder().
                 postID(postId).
                 isDeleted(IsDeletedEnum.NOT_DELETED.getCode()).
                 build());
@@ -62,7 +67,7 @@ public class TencentJobDaoImpl implements TencentJobDAO {
 
     @Override
     public TencentJobDO selectById(long id) {
-        return this.tencentJobMapper.selectOne(TencentJobDO.builder().
+        return this.selectOne(TencentJobDO.builder().
                 id(id).
                 isDeleted(IsDeletedEnum.NOT_DELETED.getCode()).
                 build());
@@ -70,8 +75,15 @@ public class TencentJobDaoImpl implements TencentJobDAO {
 
     @Override
     public TencentJobDO selectByIdNeedDeleted(long id) {
-        return this.tencentJobMapper.selectOne(TencentJobDO.builder().
+        return this.selectOneNeedDeleted(TencentJobDO.builder().
                 id(id).
                 build());
+    }
+
+    private void rebuildCreatedAtUpdatedAt(TencentJobDO tencentJobDO) {
+        if (Objects.nonNull(tencentJobDO)) {
+            tencentJobDO.setCreatedAt(TencentUtil.rebuildLocalZoneTimestamp(tencentJobDO.getCreatedAt()));
+            tencentJobDO.setUpdatedAt(TencentUtil.rebuildLocalZoneTimestamp(tencentJobDO.getUpdatedAt()));
+        }
     }
 }
