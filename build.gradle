@@ -4,6 +4,9 @@ buildscript {
         lombokVersion = '1.18.30'
         jacksonVersion = '2.18.2'
         jsoupVersion = '1.18.2'
+        sqliteVersion = '3.48.0.0'
+        mybatisVersion = '3.5.16'
+        mybatisSpringVersion = '3.0.3'
     }
     repositories {
         mavenCentral()
@@ -44,6 +47,9 @@ subprojects {
             dependency "org.projectlombok:lombok:$lombokVersion"
             dependency "com.fasterxml.jackson.core:jackson-databind:$jacksonVersion"
             dependency "org.jsoup:jsoup:$jsoupVersion"
+            dependency "org.xerial:sqlite-jdbc:$sqliteVersion"
+            dependency "org.mybatis:mybatis:$mybatisVersion"
+            dependency "org.mybatis.spring.boot:mybatis-spring-boot-starter:$mybatisSpringVersion"
         }
     }
 }
@@ -66,6 +72,20 @@ project(":recruitment-common") {
     }
 }
 
+project(":recruitment-repository") {
+    dependencies {
+        implementation project(":recruitment-common")
+        implementation 'org.springframework.boot:spring-boot-starter'
+        implementation 'com.fasterxml.jackson.core:jackson-databind'
+        implementation 'org.projectlombok:lombok'
+        implementation 'org.xerial:sqlite-jdbc'
+        implementation 'org.mybatis:mybatis'
+        implementation 'org.mybatis.spring.boot:mybatis-spring-boot-starter'
+        annotationProcessor 'org.projectlombok:lombok'
+        testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    }
+}
+
 project(":recruitment-task") {
     dependencies {
         implementation 'org.springframework.boot:spring-boot-starter'
@@ -79,6 +99,7 @@ project(":recruitment-task") {
 project(":recruitment-tencent") {
     dependencies {
         implementation project(":recruitment-common")
+        implementation project(":recruitment-repository")
         implementation 'org.springframework.boot:spring-boot-starter'
         implementation 'com.fasterxml.jackson.core:jackson-databind'
         implementation 'org.jsoup:jsoup'

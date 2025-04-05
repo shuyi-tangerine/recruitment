@@ -25,7 +25,8 @@ public class UpsertManagerImpl implements UpsertManager {
     // 防止数据问题导致死循环
     private static final int MAX_PAGE = 100;
     // 防止爬得过快
-    private static final int SLEEP_SEC = 3;
+    private static final int SLEEP_START_MILLIS = 500;
+    private static final int SLEEP_END_MILLIS = 5000;
 
     @Autowired
     private TencentRecruitmentApi tencentRecruitmentApi;
@@ -71,7 +72,7 @@ public class UpsertManagerImpl implements UpsertManager {
                 break;
             }
 
-            ThreadUtil.sleepSeconds(SLEEP_SEC);
+            ThreadUtil.sleepRandomMillis(SLEEP_START_MILLIS, SLEEP_END_MILLIS, "");
         }
 
         // 获取数据详情、插入到数据库中
@@ -110,7 +111,7 @@ public class UpsertManagerImpl implements UpsertManager {
                 break;
             }
 
-            ThreadUtil.sleepSeconds(3);
+            ThreadUtil.sleepRandomMillis(SLEEP_START_MILLIS, SLEEP_END_MILLIS, "");
         }
 
         // 获取数据详情、插入到数据库中
@@ -124,7 +125,7 @@ public class UpsertManagerImpl implements UpsertManager {
             return;
         }
 
-        ThreadUtil.sleepSeconds(3);
+        ThreadUtil.sleepRandomMillis(SLEEP_START_MILLIS, SLEEP_END_MILLIS, "");
 
         System.out.println(postDTO);
     }

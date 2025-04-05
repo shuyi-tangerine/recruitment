@@ -24,7 +24,7 @@ public class UpsertManagerTests {
 
     @Test
     public void upsertAmountPost() {
-        int amount = 20;
+        int amount = 100;
         upsertTask.upsertAmountPost(amount);
     }
 }

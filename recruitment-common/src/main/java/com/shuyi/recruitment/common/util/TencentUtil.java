@@ -4,9 +4,12 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.shuyi.recruitment.common.dto.tencent.PostDTO;
 import com.shuyi.recruitment.common.dto.tencent.ResponseDTO;
+import com.shuyi.recruitment.common.entity.TencentJobDO;
 
 import java.lang.reflect.Field;
+import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -86,15 +89,26 @@ public class TencentUtil {
     }
 
     public static Long parseUnixSeconds(String raw) {
-        try {
-            return ZonedDateTime.of(
-                    LocalDateTime.parse(raw, DateTimeFormatter.ofPattern(DATE_TIME_PATTERN, Locale.getDefault())),
-                    ZoneId.systemDefault()
-            ).toEpochSecond();
-        } catch (Exception e) {
-            e.printStackTrace();
+        if (Objects.isNull(raw) || raw.isBlank()) {
+            return null;
         }
-        return null;
+        return ZonedDateTime.of(
+                LocalDateTime.parse(raw, DateTimeFormatter.ofPattern(DATE_TIME_PATTERN, Locale.getDefault())),
+                ZoneId.systemDefault()
+        ).toEpochSecond();
+    }
+
+    public static Timestamp parseTimestamp(String raw) {
+        if (Objects.isNull(raw) || raw.isBlank()) {
+            return null;
+        }
+
+        return Timestamp.from(
+            ZonedDateTime.of(
+                LocalDateTime.parse(raw, DateTimeFormatter.ofPattern(DATE_TIME_PATTERN, Locale.getDefault())),
+                ZoneId.systemDefault()
+            ).toInstant()
+        );
     }
 
     public static <T> void checkResponse(ResponseDTO<T> responseDTO) {
@@ -108,6 +122,25 @@ public class TencentUtil {
         }
 
         throw new RuntimeException("query fail, code:" + code);
+    }
+
+    public static TencentJobDO postDtoToTencentJobDO(PostDTO postDTO) {
+        TencentJobDO tencentJobDO = TencentJobDO.builder().build();
+
+        tencentJobDO.setPostID(postDTO.getPostId());
+        tencentJobDO.setRecruitPostID(postDTO.getRecruitPostID() != null ? postDTO.getRecruitPostID().longValue() : null);
+        tencentJobDO.setRecruitPostName(postDTO.getRecruitPostName());
+        tencentJobDO.setLocationName(postDTO.getLocationName());
+        tencentJobDO.setBgName(postDTO.getBgName());
+        tencentJobDO.setOuterPostTypeID(postDTO.getOuterPostTypeID());
+        tencentJobDO.setCategoryName(postDTO.getCategoryName());
+        tencentJobDO.setResponsibility(postDTO.getResponsibility());
+        tencentJobDO.setLastUpdateTime(parseTimestamp(postDTO.getLastUpdateTime()));
+        tencentJobDO.setPostURL(postDTO.getPostURL());
+        tencentJobDO.setImportantItem(postDTO.getImportantItem());
+        tencentJobDO.setRequireWorkYearsName(postDTO.getRequireWorkYearsName());
+
+        return tencentJobDO;
     }
 
 }

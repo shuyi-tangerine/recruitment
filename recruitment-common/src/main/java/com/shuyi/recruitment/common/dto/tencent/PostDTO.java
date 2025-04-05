@@ -10,13 +10,13 @@ public class PostDTO {
     private String postId;
 
     @JsonProperty("RecruitPostId")
-    private Integer recruitPostId;
+    private Integer recruitPostID;
 
     @JsonProperty("RecruitPostName")
     private String recruitPostName;
 
     @JsonProperty("LocationId")
-    private Integer locationId;
+    private Integer locationID;
 
     @JsonProperty("LocationName")
     private String locationName;

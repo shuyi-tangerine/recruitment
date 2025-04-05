@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.shuyi.recruitment.repository.mapper.TencentJobMapper">
+    <!-- 选择性动态插入 -->
+    <insert id="insertOne" parameterType="com.shuyi.recruitment.common.entity.TencentJobDO"
+            useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO `tencent_job`
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="postID != null and postID != ''">`post_id`,</if>
+            <if test="recruitPostID != null">`recruit_post_id`,</if>
+            <if test="recruitPostName != null and recruitPostName != ''">`recruit_post_name`,</if>
+            <if test="locationName != null and locationName != ''">`location_name`,</if>
+            <if test="bgName != null and bgName != ''">`bg_name`,</if>
+            <if test="outerPostTypeID != null and outerPostTypeID != ''">`outer_post_type_id`,</if>
+            <if test="categoryName != null and categoryName != ''">`category_name`,</if>
+            <if test="responsibility != null">`responsibility`,</if>
+            <if test="lastUpdateTime != null">`last_update_time`,</if>
+            <if test="postURL != null and postURL != ''">`post_url`,</if>
+            <if test="importantItem != null">`important_item`,</if>
+            <if test="requireWorkYearsName != null and requireWorkYearsName != ''">`require_work_years_name`,</if>
+            <if test="createdBy != null and createdBy != ''">`created_by`,</if>
+            <if test="updatedBy != null and updatedBy != ''">`updated_by`,</if>
+            <if test="status != null">`status`,</if>
+            <if test="extra != null">`extra`,</if>
+            <if test="isDeleted != null">`is_deleted`,</if>
+        </trim>
+        <trim prefix="VALUES (" suffix=")" suffixOverrides=",">
+            <if test="postID != null and postID != ''">#{postID},</if>
+            <if test="recruitPostID != null">#{recruitPostID},</if>
+            <if test="recruitPostName != null and recruitPostName != ''">#{recruitPostName},</if>
+            <if test="locationName != null and locationName != ''">#{locationName},</if>
+            <if test="bgName != null and bgName != ''">#{bgName},</if>
+            <if test="outerPostTypeID != null and outerPostTypeID != ''">#{outerPostTypeID},</if>
+            <if test="categoryName != null and categoryName != ''">#{categoryName},</if>
+            <if test="responsibility != null">#{responsibility},</if>
+            <if test="lastUpdateTime != null">#{lastUpdateTime},</if>
+            <if test="postURL != null and postURL != ''">#{postURL},</if>
+            <if test="importantItem != null">#{importantItem},</if>
+            <if test="requireWorkYearsName != null and requireWorkYearsName != ''">#{requireWorkYearsName},</if>
+            <if test="createdBy != null and createdBy != ''">#{createdBy},</if>
+            <if test="updatedBy != null and updatedBy != ''">#{updatedBy},</if>
+            <if test="status != null">#{status},</if>
+            <if test="extra != null">#{extra},</if>
+            <if test="isDeleted != null">#{isDeleted},</if>
+        </trim>
+    </insert>
+    <!-- 通用更新：非空字段更新，空字段跳过 -->
+    <update id="updateById" parameterType="com.shuyi.recruitment.common.entity.TencentJobDO">
+        UPDATE `tencent_job`
+        <set>
+            <if test="postID != null and postID != ''">`post_id` = #{postID},</if>
+            <if test="recruitPostID != null">`recruit_post_id` = #{recruitPostID},</if>
+            <if test="recruitPostName != null and recruitPostName != ''">`recruit_post_name` = #{recruitPostName},</if>
+            <if test="locationName != null and locationName != ''">`location_name` = #{locationName},</if>
+            <if test="bgName != null and bgName != ''">`bg_name` = #{bgName},</if>
+            <if test="outerPostTypeID != null and outerPostTypeID != ''">`outer_post_type_id` = #{outerPostTypeID},</if>
+            <if test="categoryName != null and categoryName != ''">`category_name` = #{categoryName},</if>
+            <if test="responsibility != null">`responsibility` = #{responsibility},</if>
+            <if test="lastUpdateTime != null">`last_update_time` = #{lastUpdateTime},</if>
+            <if test="postURL != null and postURL != ''">`post_url` = #{postURL},</if>
+            <if test="importantItem != null">`important_item` = #{importantItem},</if>
+            <if test="requireWorkYearsName != null and requireWorkYearsName != ''">`require_work_years_name` = #{requireWorkYearsName},</if>
+            <if test="createdBy != null and createdBy != ''">`created_by` = #{createdBy},</if>
+            <if test="updatedBy != null and updatedBy != ''">`updated_by` = #{updatedBy},</if>
+            <if test="status != null">`status` = #{status},</if>
+            <if test="extra != null">`extra` = #{extra},</if>
+            <if test="isDeleted != null">`is_deletld` = #{isDeleted},</if>
+        </set>
+        WHERE `id` = #{id}
+    </update>
+    <select id="selectOne" parameterType="com.shuyi.recruitment.common.entity.TencentJobDO">
+        SELECT * FROM `tencent_job`
+        <where>
+            <choose>
+                <when test="id != null or (postID != null and postID != '')">
+                    <if test="id != null">AND `id` = #{id}</if>
+                    <if test="postID != null and postID != ''">AND `post_id` = #{postID}</if>
+                    <if test="isDeleted != null">AND `is_deleted` = #{isDeleted}</if>
+                </when>
+                <otherwise>false</otherwise>
+            </choose>
+        </where>
+        LIMIT 1
+    </select>
+</mapper>
