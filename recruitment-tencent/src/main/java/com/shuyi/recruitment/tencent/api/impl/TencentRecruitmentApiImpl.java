@@ -27,6 +27,7 @@ public class TencentRecruitmentApiImpl implements TencentRecruitmentApi {
             try {
                 // 超时单位：毫秒
                 Document document = Jsoup.connect(url).ignoreContentType(true).headers(this.getHeaders()).timeout(5000).get();
+                System.out.println("[postQuery] url: " + url);
                 return TencentUtil.parse(document.text(), new TypeReference<>() {});
             } catch (IOException e) {
                 if (i >= retryTimes) {

@@ -94,6 +94,7 @@ public class UpsertManagerImpl implements UpsertManager {
 
         while (true) {
             requestDTO.setPageIndex(pageIndex);
+            requestDTO.setTimestamp(System.currentTimeMillis());
 
             ++pageIndex;
 
@@ -103,6 +104,8 @@ public class UpsertManagerImpl implements UpsertManager {
             if (Objects.isNull(postQueryResponseDataDTO) || Objects.isNull(postQueryResponseDataDTO.getPosts()) || postQueryResponseDataDTO.getPosts().isEmpty()) {
                 break;
             }
+
+            System.out.printf("page(%d) list dto size:%d \n", pageIndex, postQueryResponseDataDTO.getPosts().size());
 
             // 达到需要的数据量级了也停止
             for(PostDTO post : postQueryResponseDataDTO.getPosts()) {
@@ -150,9 +153,9 @@ public class UpsertManagerImpl implements UpsertManager {
     private PostQueryRequestDTO buildDefaultPostQueryRequestDTO(int pageIndex) {
         PostQueryRequestDTO requestDTO = new PostQueryRequestDTO();
         requestDTO.setTimestamp(System.currentTimeMillis());
-        requestDTO.setCategoryId(List.of(CategoryEnum.FINANCE.getCode()));
-        requestDTO.setAttrId(List.of(AttrEnum.SOCIAL.getCode()));
-        requestDTO.setCityId(List.of(CityEnum.SHENZHEN.getCode(), CityEnum.GUANGZHOU.getCode()));
+        requestDTO.setCategoryId(List.of(CategoryEnum.FINANCE.getCode(), CategoryEnum.TECH_RESEARCH_DEV.getCode()));
+        requestDTO.setAttrId(List.of(AttrEnum.SOCIAL.getCode(), AttrEnum.CAMPUS_FRESH_GRADUATE.getCode(), AttrEnum.CAMPUS_TRAINEE.getCode()));
+        requestDTO.setCityId(List.of(CityEnum.SHENZHEN.getCode(), CityEnum.BEIJING.getCode(), CityEnum.GUANGZHOU.getCode()));
         requestDTO.setPageSize(TencentUtil.DEFAULT_PAGE_SIZE);
         requestDTO.setLanguage(LanguageEnum.ZH_CN.getName());
         requestDTO.setArea(AreaEnum.CN.getName());

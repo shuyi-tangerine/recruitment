@@ -8,6 +8,7 @@ import lombok.Getter;
 public enum CityEnum {
 
     SHENZHEN(1, "深圳", ""),
+    BEIJING(2, "北京", ""),
     GUANGZHOU(5, "广州", ""),
 
     ;
