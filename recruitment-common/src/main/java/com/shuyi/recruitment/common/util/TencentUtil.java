@@ -137,7 +137,7 @@ public class TencentUtil {
         TencentJobDO tencentJobDO = TencentJobDO.builder().build();
 
         tencentJobDO.setPostID(postDTO.getPostId());
-        tencentJobDO.setRecruitPostID(postDTO.getRecruitPostID() != null ? postDTO.getRecruitPostID().longValue() : null);
+        tencentJobDO.setRecruitPostID(postDTO.getRecruitPostID());
         tencentJobDO.setRecruitPostName(postDTO.getRecruitPostName());
         tencentJobDO.setLocationName(postDTO.getLocationName());
         tencentJobDO.setBgName(postDTO.getBgName());

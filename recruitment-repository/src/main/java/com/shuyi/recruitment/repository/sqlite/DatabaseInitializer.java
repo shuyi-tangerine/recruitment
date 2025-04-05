@@ -1,6 +1,5 @@
 package com.shuyi.recruitment.repository.sqlite;
 
-import com.shuyi.recruitment.common.util.FileUtil;
 import jakarta.annotation.PostConstruct;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;

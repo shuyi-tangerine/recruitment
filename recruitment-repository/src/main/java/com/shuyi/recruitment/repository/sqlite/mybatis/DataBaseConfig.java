@@ -18,7 +18,6 @@ public class DataBaseConfig {
     public DataSource dataSource() {
         return DataSourceBuilder.create()
                 .driverClassName("org.sqlite.JDBC")
-                // TODO to config
                 .url("jdbc:sqlite:/Users/csy/Documents/workplace/SQLite/db/recruitment.db")
                 .build();
     }

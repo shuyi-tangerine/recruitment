@@ -10,7 +10,7 @@ public class PostDTO {
     private String postId;
 
     @JsonProperty("RecruitPostId")
-    private Integer recruitPostID;
+    private Long recruitPostID;
 
     @JsonProperty("RecruitPostName")
     private String recruitPostName;

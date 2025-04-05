@@ -25,9 +25,9 @@ import java.util.Set;
 public class UpsertManagerImpl implements UpsertManager {
 
     // 防止数据问题导致死循环
-    private static final int MAX_PAGE = 500;
+    private static final int MAX_PAGE = 5000;
     // 防止爬得过快
-    private static final int SLEEP_START_MILLIS = 500;
+    private static final int SLEEP_START_MILLIS = 200;
     private static final int SLEEP_END_MILLIS = 5000;
 
     @Autowired
@@ -113,6 +113,8 @@ public class UpsertManagerImpl implements UpsertManager {
                 if (postIds.size() >= amount) {
                     break;
                 }
+
+                this.upsertByPostId(post.getPostId());
             }
 
             if (postIds.size() >= amount || pageIndex >= MAX_PAGE) {
@@ -123,7 +125,7 @@ public class UpsertManagerImpl implements UpsertManager {
         }
 
         // 获取数据详情、插入到数据库中
-        this.upsertByPostIds(postIds.toArray(new String[0]));
+        // this.upsertByPostIds(postIds.toArray(new String[0]));
     }
 
     @Override
@@ -134,7 +136,9 @@ public class UpsertManagerImpl implements UpsertManager {
         }
 
         TencentJobDO tencentJobDO = this.tencentJobDAO.upsert(TencentUtil.postDtoToTencentJobDO(postDTO));
-        System.out.println("insert dto: " + postDTO + ", do: " + tencentJobDO);
+        System.out.printf("insert postId:%s lastUpdateTime:%s postName:%s postURL:%s id:%d createdAt:%s updatedAt:%s\n",
+                postDTO.getPostId(), postDTO.getLastUpdateTime(), postDTO.getRecruitPostName(), postDTO.getPostURL(),
+                tencentJobDO.getId(), tencentJobDO.getCreatedAt(), tencentJobDO.getUpdatedAt());
 
         ThreadUtil.sleepRandomMillis(SLEEP_START_MILLIS, SLEEP_END_MILLIS, "");
     }
@@ -153,8 +157,8 @@ public class UpsertManagerImpl implements UpsertManager {
     private PostQueryRequestDTO buildDefaultPostQueryRequestDTO(int pageIndex) {
         PostQueryRequestDTO requestDTO = new PostQueryRequestDTO();
         requestDTO.setTimestamp(System.currentTimeMillis());
-        requestDTO.setCategoryId(List.of(CategoryEnum.FINANCE.getCode(), CategoryEnum.TECH_RESEARCH_DEV.getCode()));
-        requestDTO.setAttrId(List.of(AttrEnum.SOCIAL.getCode(), AttrEnum.CAMPUS_FRESH_GRADUATE.getCode(), AttrEnum.CAMPUS_TRAINEE.getCode()));
+        // requestDTO.setCategoryId(List.of(CategoryEnum.FINANCE.getCode(), CategoryEnum.TECH_RESEARCH_DEV.getCode()));
+        // requestDTO.setAttrId(List.of(AttrEnum.SOCIAL.getCode(), AttrEnum.CAMPUS_FRESH_GRADUATE.getCode(), AttrEnum.CAMPUS_TRAINEE.getCode()));
         requestDTO.setCityId(List.of(CityEnum.SHENZHEN.getCode(), CityEnum.BEIJING.getCode(), CityEnum.GUANGZHOU.getCode()));
         requestDTO.setPageSize(TencentUtil.DEFAULT_PAGE_SIZE);
         requestDTO.setLanguage(LanguageEnum.ZH_CN.getName());
