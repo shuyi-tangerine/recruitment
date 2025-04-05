@@ -10,6 +10,8 @@ import com.shuyi.recruitment.common.entity.TencentJobDO;
 
 import java.lang.reflect.Field;
 import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -27,7 +29,8 @@ public class TencentUtil {
     private static final int SUCCESS_CODE = 200;
 
 
-    private static final String DATE_TIME_PATTERN = "yyyy年MM月dd日";
+    private static final String DATE_TIME_PATTERN = "yyyy-MM-dd";
+    private static final String[] DATE_TIME_PATTERNS = {"yyyy年MM月dd日", "yyyy-MM-dd"};
 
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
@@ -92,10 +95,8 @@ public class TencentUtil {
         if (Objects.isNull(raw) || raw.isBlank()) {
             return null;
         }
-        return ZonedDateTime.of(
-                LocalDateTime.parse(raw, DateTimeFormatter.ofPattern(DATE_TIME_PATTERN, Locale.getDefault())),
-                ZoneId.systemDefault()
-        ).toEpochSecond();
+
+        return parseTimestamp(raw).toInstant().getEpochSecond();
     }
 
     public static Timestamp parseTimestamp(String raw) {
@@ -103,12 +104,20 @@ public class TencentUtil {
             return null;
         }
 
-        return Timestamp.from(
-            ZonedDateTime.of(
-                LocalDateTime.parse(raw, DateTimeFormatter.ofPattern(DATE_TIME_PATTERN, Locale.getDefault())),
-                ZoneId.systemDefault()
-            ).toInstant()
-        );
+        for (int i=0; i<DATE_TIME_PATTERNS.length; i++) {
+            try {
+
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern(DATE_TIME_PATTERNS[i], Locale.CHINA);
+                LocalDate localDate = LocalDate.parse(raw, formatter);
+
+                return Timestamp.from(localDate.atStartOfDay(ZoneId.systemDefault()).toInstant());
+            } catch (Exception e) {
+                if (i + 1 >= DATE_TIME_PATTERNS.length) {
+                    throw e;
+                }
+            }
+        }
+        throw new RuntimeException("no pattern can parse date time: " + raw);
     }
 
     public static <T> void checkResponse(ResponseDTO<T> responseDTO) {

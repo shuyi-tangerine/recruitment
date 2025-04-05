@@ -3,6 +3,7 @@ package com.shuyi.recruitment.tencent.manager.impl;
 import com.shuyi.recruitment.common.dto.tencent.PostDTO;
 import com.shuyi.recruitment.common.dto.tencent.PostQueryRequestDTO;
 import com.shuyi.recruitment.common.dto.tencent.PostQueryResponseDataDTO;
+import com.shuyi.recruitment.common.entity.TencentJobDO;
 import com.shuyi.recruitment.common.enums.tencent.AreaEnum;
 import com.shuyi.recruitment.common.enums.tencent.AttrEnum;
 import com.shuyi.recruitment.common.enums.tencent.CategoryEnum;
@@ -10,6 +11,7 @@ import com.shuyi.recruitment.common.enums.tencent.CityEnum;
 import com.shuyi.recruitment.common.enums.tencent.LanguageEnum;
 import com.shuyi.recruitment.common.util.TencentUtil;
 import com.shuyi.recruitment.common.util.ThreadUtil;
+import com.shuyi.recruitment.repository.dao.TencentJobDAO;
 import com.shuyi.recruitment.tencent.api.TencentRecruitmentApi;
 import com.shuyi.recruitment.tencent.manager.UpsertManager;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,13 +25,16 @@ import java.util.Set;
 public class UpsertManagerImpl implements UpsertManager {
 
     // 防止数据问题导致死循环
-    private static final int MAX_PAGE = 100;
+    private static final int MAX_PAGE = 500;
     // 防止爬得过快
     private static final int SLEEP_START_MILLIS = 500;
     private static final int SLEEP_END_MILLIS = 5000;
 
     @Autowired
     private TencentRecruitmentApi tencentRecruitmentApi;
+
+    @Autowired
+    private TencentJobDAO tencentJobDAO;
 
     @Override
     public void upsertByStartTime(long startUnixSeconds) {
@@ -125,9 +130,10 @@ public class UpsertManagerImpl implements UpsertManager {
             return;
         }
 
-        ThreadUtil.sleepRandomMillis(SLEEP_START_MILLIS, SLEEP_END_MILLIS, "");
+        TencentJobDO tencentJobDO = this.tencentJobDAO.upsert(TencentUtil.postDtoToTencentJobDO(postDTO));
+        System.out.println("insert dto: " + postDTO + ", do: " + tencentJobDO);
 
-        System.out.println(postDTO);
+        ThreadUtil.sleepRandomMillis(SLEEP_START_MILLIS, SLEEP_END_MILLIS, "");
     }
 
     @Override

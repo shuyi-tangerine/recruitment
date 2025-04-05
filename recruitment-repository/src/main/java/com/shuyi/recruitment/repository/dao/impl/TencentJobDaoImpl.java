@@ -19,6 +19,10 @@ public class TencentJobDaoImpl implements TencentJobDAO {
 
     @Override
     public TencentJobDO upsert(TencentJobDO req) {
+        if (Objects.isNull(req)) {
+            return null;
+        }
+
         TencentJobDO tencentJobDO = this.selectByPostId(req.getPostID());
         if (tencentJobDO == null) {
             this.tencentJobMapper.insertOne(req);
