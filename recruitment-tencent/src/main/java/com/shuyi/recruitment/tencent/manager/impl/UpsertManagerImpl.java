@@ -29,7 +29,7 @@ public class UpsertManagerImpl implements UpsertManager {
     private static final int SLEEP_START_MILLIS = 200;
     private static final int SLEEP_END_MILLIS = 5000;
 
-    private static final int UPDATE_INTERVAL_SEC = 3 * 60 * 60;
+    private static final int UPDATE_INTERVAL_SEC = 2 * 24 * 60 * 60;
 
     @Autowired
     private TencentRecruitmentApi tencentRecruitmentApi;
