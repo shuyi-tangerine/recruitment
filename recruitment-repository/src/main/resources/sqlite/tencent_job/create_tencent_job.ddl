@@ -25,12 +25,3 @@ CREATE TABLE IF NOT EXISTS `tencent_job`(
 
 -- 索引
 CREATE INDEX IF NOT EXISTS `idx_lut` ON `tencent_job` (`last_update_time`);
-
--- 创建更新时间的触发器
-CREATE TRIGGER IF NOT EXISTS update_timestamp
-    AFTER UPDATE ON tencent_job
-    FOR EACH ROW
-BEGIN
-    UPDATE tencent_job SET updated_at = CURRENT_TIMESTAMP WHERE id = OLD.id;
-END;
-
